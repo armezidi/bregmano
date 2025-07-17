@@ -1,0 +1,86 @@
+builder:
+  Tfinal: 200
+  Tinit: 0
+  _target_: fourierflow.builders.Darcy1tBuilder
+  batch_size: 16
+  data_path: ${oc.env:DATA_ROOT}/PDEBench/2D_DarcyFlow_beta01.hdf5
+  num_workers: 0
+  pin_memory: true
+  ssr: 1
+  test_size: 1000
+  train_size: 1000
+callbacks:
+- _target_: fourierflow.callbacks.CustomModelCheckpoint
+  every_n_epochs: 5
+  every_n_train_steps: null
+  filename: '{epoch}-{step}-{valid_loss:.5f}'
+  mode: min
+  monitor: valid_loss
+  save_last: false
+  save_top_k: 1
+  verbose: true
+- _target_: pytorch_lightning.callbacks.LearningRateMonitor
+  logging_interval: step
+- _target_: pytorch_lightning.callbacks.ModelSummary
+  max_depth: 4
+- _target_: pytorch_lightning.callbacks.EarlyStopping
+  min_delta: 0.001
+  mode: min
+  monitor: valid_loss
+  patience: 20
+  verbose: true
+routine:
+  _target_: fourierflow.routines.Grid2D1tExperiment
+  conv:
+    _target_: fourierflow.modules.FNOFactorized2DBlock
+    dropout: 0.0
+    factor: 4
+    ff_weight_norm: true
+    gain: 0.1
+    in_dropout: 0.0
+    input_dim: 1
+    modes: 12
+    n_layers: 4
+    share_weight: true
+    two_layers_lifting: true
+    width: 32
+  max_accumulations: 1000
+  n_steps: 1
+  noise_std: 0.0
+  optimizer:
+    _args_:
+    - '${get_method: torch.optim.Adam}'
+    _target_: functools.partial
+    lr: 0.001
+    weight_decay: 0.0
+  scheduler:
+    name: learning_rate
+    scheduler:
+      _args_:
+      - '${get_method: torch.optim.lr_scheduler.ConstantLR}'
+      _target_: functools.partial
+      factor: 1
+      optimizer: optimizer
+      total_iters: 0
+  should_normalize: false
+  use_position: false
+seed: 45
+trainer:
+  accelerator: gpu
+  check_val_every_n_epoch: 5
+  devices: 1
+  fast_dev_run: false
+  limit_train_batches: 1.0
+  log_every_n_steps: 320
+  max_epochs: 2000
+  precision: 32
+  track_grad_norm: -1
+wandb:
+  group: ffno_12m_32w_2lift/4/1e-03/45
+  log_model: true
+  notes: ''
+  project: FFNOr
+  tags:
+  - ffno_12m_32w_2lift
+  - pat20
+  - darcy

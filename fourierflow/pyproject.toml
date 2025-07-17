@@ -1,0 +1,123 @@
+[tool.poetry]
+name = "fourierflow"
+version = "0.3.0"
+description = "Experiments with Fourier layers on simulation data."
+authors = ["Alasdair Tran <alasdair.tran@anu.edu.au>"]
+repository = "https://github.com/alasdairtran/fourierflow"
+
+[tool.poetry.dependencies]
+python = "3.10.13"
+# poetry add bokeh dask-cuda debugpy dm-haiku einops gdown gin-config \
+#   graphviz h5netcdf hydra-core hyperopt ipykernel jupyterlab \
+#   matplotlib numpy optax pandas plotly poethepoet pydocstyle \
+#   python-dotenv pytorch-lightning requests rich seaborn termcolor \
+#   tfrecord torchdiffeq torchtyping typer wandb xarray
+bokeh = "2.4.3"
+dask-cuda = "22.4.0"
+debugpy = "1.6.3"
+dm-haiku = "0.0.7"
+einops = "0.4.1"
+gdown = "4.4.0"
+gin-config = "0.5.0"
+graphviz = "0.20"
+h5netcdf = "1.0.0"
+hydra-core = "1.2.0"
+hyperopt = "0.2.7"
+ipykernel = "6.15.2"
+jax = "0.3.15"
+# Release v0.2.0
+jax-cfd = {git = "https://github.com/google/jax-cfd.git", rev = "eb4d723e10a11dd2bc3449932a549262e19d5972"}
+# Replace wheel URLs with versions once jaxlib is PEP 503 compliant:
+# https://github.com/google/jax/issues/5410
+jaxlib = [
+    {url = "https://storage.googleapis.com/jax-releases/cuda11/jaxlib-0.3.15+cuda11.cudnn805-cp310-none-manylinux2014_x86_64.whl", markers = "sys_platform == 'linux'" },
+]
+jupyterlab = "3.4.6"
+matplotlib = "3.5.3"
+numpy = "1.23.2"
+scipy = "<1.13.0"
+optax = "0.1.2"
+pandas = "1.4.4"
+plotly = "5.8.0"
+poethepoet = "0.13.1"
+pydocstyle = "6.1.1"
+python-dotenv = "0.20.0"
+torchmetrics = "0.11.4"
+pytorch-lightning = "1.7.6"
+requests = "2.27.1"
+rich = "12.4.4"
+seaborn = "0.11.2"
+tensorflow = { version = "2.10.0", markers = "sys_platform == 'darwin'" }
+tensorflow-gpu = { version = "2.10.0", markers = "sys_platform == 'win32' or sys_platform == 'linux'" }
+termcolor = "1.1.0"
+tfrecord = "1.14.1"
+# Note that we need to specify the exact version of pytorch, otherwise
+# torch-1.11.0+rocm will be installed instead :-/
+torch = [
+    {version = "1.12.1+cu116", source = "torch", markers = "sys_platform == 'linux' or sys_platform == 'win32'"},
+    {url = "https://download.pytorch.org/whl/cpu/torch-1.12.1-cp310-none-macosx_10_9_x86_64.whl", markers = "sys_platform == 'darwin' and platform_machine == 'x86_64'"},
+    {url = "https://download.pytorch.org/whl/cpu/torch-1.12.1-cp310-none-macosx_11_0_arm64.whl", markers = "sys_platform == 'darwin' and platform_machine == 'arm64'"},
+]
+torchdiffeq = "0.2.3"
+torchtyping = "0.1.4"
+typer = "0.6.1"
+wandb = "0.13.2"
+xarray = "2022.06.0"
+
+[tool.poetry.group.dev.dependencies]
+# poetry add --group dev autopep8 ipympl isort mypy pylint pytest types-requests
+autopep8 = "1.7.0"
+ipympl = "0.8.8"
+isort = "5.10.1"
+mypy = "0.971"
+pydocstyle = "6.1.1"
+pylint = "2.15.0"
+pytest = "7.1.3"
+types-requests = "2.28.9"
+
+# Remove once pytorch is PEP 503 compliant:
+# https://github.com/pytorch/pytorch/issues/25639#issuecomment-946224563
+[[tool.poetry.source]]
+name = "torch"
+url = "https://eternalphane.github.io/pytorch-pypi/"
+priority = "primary"
+
+[[tool.poetry.source]]
+name = "pypi-simple"
+url = "https://pypi.org/simple/"
+priority = "primary"
+
+[tool.poetry.scripts]
+fourierflow = 'fourierflow.commands.__main__:app'
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
+
+[tool.pylint.messages_control]
+disable = [
+    "cyclic-import", # disabled until https://github.com/PyCQA/pylint/issues/3525 is fixed
+    "invalid-name",
+    "logging-fstring-interpolation", # f-strings are faster
+    "missing-class-docstring",
+    "missing-function-docstring",
+    "missing-module-docstring",
+    "no-else-return",
+    "no-member",
+    "no-self-argument",
+    "no-self-use",
+    "redefined-builtin",
+    "too-few-public-methods",
+    "unused-argument",
+    "abstract-method",
+    "arguments-differ",
+]
+
+[tool.pylint.similarities]
+# Minimum lines number of a similarity.
+min-similarity-lines = 5
+# Ignore imports when computing similarities.
+ignore-imports = "yes"
+
+[tool.isort]
+src_paths = ["fourierflow"]
